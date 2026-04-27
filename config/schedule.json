@@ -1,0 +1,18 @@
+{
+  "timezone": "America/New_York",
+  "long_form_slots": [
+    {"day": "Monday", "time": "10:00", "series": "tool_review", "platform": "youtube"},
+    {"day": "Wednesday", "time": "10:00", "series": "tutorial", "platform": "youtube"},
+    {"day": "Friday", "time": "10:00", "series": "build_log", "platform": "youtube"}
+  ],
+  "shorts_slots": [
+    {"day": "Tuesday", "time": "12:00", "platform": ["youtube_shorts", "instagram_reels"]},
+    {"day": "Thursday", "time": "12:00", "platform": ["youtube_shorts", "instagram_reels"]},
+    {"day": "Saturday", "time": "12:00", "platform": ["youtube_shorts", "instagram_reels"]}
+  ],
+  "batch_day": "Sunday",
+  "batch_time": "20:00",
+  "content_production_cron": "0 5 * * 1,3,5",
+  "shorts_production_cron": "0 6 * * 2,4,6",
+  "batch_publish_cron": "0 20 * * 0"
+}

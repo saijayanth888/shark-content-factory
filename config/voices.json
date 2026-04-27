@@ -1,0 +1,25 @@
+{
+  "default": {
+    "voice_id": "21m00Tcm4TlvDq8ikWAM",
+    "name": "Rachel",
+    "description": "Professional, clear, neutral American English",
+    "model": "eleven_turbo_v2_5",
+    "settings": {
+      "stability": 0.5,
+      "similarity_boost": 0.75,
+      "style": 0.3
+    }
+  },
+  "alternative_voices": [
+    {
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "name": "Bella",
+      "description": "Warm, conversational"
+    },
+    {
+      "voice_id": "ErXwobaYiN019PkySvjV",
+      "name": "Antoni",
+      "description": "Male, professional"
+    }
+  ]
+}

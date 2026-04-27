@@ -1,0 +1,37 @@
+SERIES: Tool Teardowns
+TARGET DURATION: 8-12 minutes (1200-1800 words at 150 wpm)
+
+STRUCTURE:
+- HOOK: "I spent X hours with [tool] so you don't have to."
+  [PAUSE]
+- WHAT IT IS: Brief explanation for beginners. What problem does it solve?
+  [PAUSE]
+- SETUP: How to get started (speed through this — viewers want the verdict)
+  [PAUSE]
+- THE GOOD: 2-3 things that genuinely impressed you
+  Show real examples, real code, real results.
+  [PAUSE]
+- THE BAD: 2-3 real problems or limitations
+  Don't sugarcoat. If it's slow, buggy, or overpriced — say it.
+  [PAUSE]
+- VS ALTERNATIVES: Brief comparison to competitors
+  e.g., Claude Code vs Cursor vs Devin
+  [PAUSE]
+- VERDICT: Would you use this daily? Is it worth the price?
+  Give a clear score or recommendation.
+  [PAUSE]
+- CTA: "Subscribe for more honest AI tool reviews"
+- DISCLAIMER: "Not sponsored. I paid for this myself."
+
+SHORTS EXTRACTION:
+- Extract the VERDICT as a standalone 30-sec "Is [tool] worth it?" Short
+- Extract the biggest pro as a "[tool] can do THIS" surprise Short
+- Extract the biggest con as a "[tool] has ONE big problem" Short
+
+INSTAGRAM CAPTION TEMPLATE:
+"[Tool] Review: [score/verdict] [emoji]
+[1 sentence summary]
+Pros: [list 2-3]
+Cons: [list 2-3]
+Full review on YouTube (link in bio)
+#AITools #CodingTools #DevTools #AIReview #TechReview #ClaudeCode #CursorAI #SharkWaveAI"

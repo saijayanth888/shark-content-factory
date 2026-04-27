@@ -1,0 +1,37 @@
+SERIES: YouTube Shorts / Instagram Reels
+TARGET DURATION: 30-60 seconds (75-150 words at 150 wpm)
+FORMAT: Vertical 9:16 (1080x1920)
+
+STRUCTURE:
+- HOOK (0-3 sec): Bold text overlay + opening statement
+  Must grab attention INSTANTLY. No intro, no greeting.
+  Examples:
+    "This AI trade made me $X"
+    "Stop using [tool] — here's why"
+    "I built this in 60 seconds with AI"
+- VALUE (5-45 sec): ONE key insight, result, or tip
+  Fast-paced, no filler. Every second must deliver value.
+  Use jump cuts. Keep energy high.
+- CTA (3-5 sec): "Follow for more" or "Full video on YouTube"
+  Point to long-form for deeper content.
+
+TEXT OVERLAY RULES:
+- Always add text overlays (many watch without sound)
+- Font: Bold, white with dark outline
+- Position: Center or lower third
+- Max 6 words per overlay
+- Change overlay every 3-5 seconds
+
+TYPES OF SHORTS:
+1. RESULTS REVEAL: "My AI made/lost $X this week" (extract from build log)
+2. QUICK TIP: "One Claude Code trick you need to know"
+3. HOT TAKE: "Why [tool] is overrated"
+4. TIMELAPSE BUILD: "Building [X] in 60 seconds"
+5. BEFORE/AFTER: "Before AI vs After AI"
+6. MISTAKE: "This mistake cost my AI $X"
+
+INSTAGRAM-SPECIFIC:
+- Add 20-30 relevant hashtags in caption
+- First line of caption is the hook (shows in feed)
+- Tag relevant accounts (@anthropic, etc.)
+- Use trending audio when available (manual step)

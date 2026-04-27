@@ -1,0 +1,34 @@
+SERIES: Shark Agent Build Log
+TARGET DURATION: 8-12 minutes (1200-1800 words at 150 wpm)
+
+STRUCTURE:
+- HOOK: Start with this week's P&L number. "My AI trading agent made/lost $X this week."
+  [PAUSE]
+- RECAP: What positions the agent held, what it bought/sold
+  Show real numbers. Never fake results.
+  [PAUSE]
+- DECISIONS: Walk through 1-2 key trade decisions. Show the bull vs bear debate.
+  Explain the agent's reasoning — what signals triggered the trade.
+  [PAUSE]
+- WHAT BROKE: Be honest about failures. Did the agent make bad calls? Why?
+  Show the actual error logs or decision process that went wrong.
+  [PAUSE]
+- WHAT IMPROVED: Any strategy adjustments from the weekly review
+  Code changes, parameter tweaks, new indicators added.
+  [PAUSE]
+- NEXT WEEK: What the agent is watching — sectors, earnings, macro events
+  [PAUSE]
+- CTA: "Subscribe to see if the shark survives next week"
+- DISCLAIMER: "This is not financial advice. I'm documenting an experiment. Results may vary."
+
+SHORTS EXTRACTION:
+- Extract the HOOK (first P&L reveal) as a standalone 30-sec Short
+- Extract the biggest win or loss as a "This AI trade made/lost $X" Short
+- Extract "What broke" as a "Mistake that cost my AI $X" Short
+
+INSTAGRAM CAPTION TEMPLATE:
+"Week [N] P&L: [+/-$X] [emoji]
+My AI trading agent [won/lost] this week. Here's what happened.
+[2-3 sentence summary]
+Full breakdown on YouTube (link in bio)
+#AITrading #AlgorithmicTrading #TradingBot #AIAgent #StockTrading #MachineLearning #FinTech #SharkWaveAI"

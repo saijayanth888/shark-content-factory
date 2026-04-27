@@ -1,0 +1,49 @@
+{
+  "youtube_longform": {
+    "enabled": true,
+    "resolution": "1920x1080",
+    "aspect_ratio": "16:9",
+    "codec": "h264",
+    "max_duration_minutes": 15,
+    "min_duration_minutes": 8,
+    "thumbnail_size": "1280x720",
+    "title_max_chars": 100,
+    "description_max_chars": 5000,
+    "tags_max": 15,
+    "upload_api": "youtube_data_api_v3"
+  },
+  "youtube_shorts": {
+    "enabled": true,
+    "resolution": "1080x1920",
+    "aspect_ratio": "9:16",
+    "codec": "h264",
+    "max_duration_seconds": 60,
+    "min_duration_seconds": 15,
+    "title_max_chars": 100,
+    "add_hashtag_shorts": true,
+    "text_overlay": true,
+    "text_overlay_font_size": 48,
+    "upload_api": "youtube_data_api_v3"
+  },
+  "instagram_reels": {
+    "enabled": true,
+    "resolution": "1080x1920",
+    "aspect_ratio": "9:16",
+    "codec": "h264",
+    "audio_codec": "aac",
+    "max_duration_seconds": 90,
+    "min_duration_seconds": 5,
+    "max_file_size_mb": 100,
+    "caption_max_chars": 2200,
+    "hashtags_max": 30,
+    "upload_api": "instagram_graph_api",
+    "cover_image": true
+  },
+  "instagram_stories": {
+    "enabled": false,
+    "resolution": "1080x1920",
+    "aspect_ratio": "9:16",
+    "max_duration_seconds": 60,
+    "note": "Future: behind-the-scenes of the content factory"
+  }
+}

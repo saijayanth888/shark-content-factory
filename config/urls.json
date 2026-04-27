@@ -1,0 +1,26 @@
+{
+  "apis": {
+    "elevenlabs_tts": "https://api.elevenlabs.io/v1/text-to-speech",
+    "pexels_video_search": "https://api.pexels.com/videos/search",
+    "youtube_suggest": "https://suggestqueries.google.com/complete/search",
+    "instagram_graph": "https://graph.facebook.com/v19.0"
+  },
+  "youtube": {
+    "video_watch": "https://www.youtube.com/watch",
+    "playlist": "https://www.youtube.com/playlist",
+    "studio_base": "https://studio.youtube.com",
+    "studio_video_edit": "https://studio.youtube.com/video"
+  },
+  "references": {
+    "youtube_policy": "https://support.google.com/youtube/answer/1311392",
+    "google_cloud_console": "https://console.cloud.google.com/"
+  },
+  "google_oauth_scopes": [
+    "https://www.googleapis.com/auth/youtube.upload",
+    "https://www.googleapis.com/auth/youtube",
+    "https://www.googleapis.com/auth/youtube.readonly",
+    "https://www.googleapis.com/auth/gmail.send",
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/drive.file"
+  ]
+}

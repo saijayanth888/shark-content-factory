@@ -1,0 +1,35 @@
+SERIES: Build With AI
+TARGET DURATION: 8-12 minutes (1200-1800 words at 150 wpm)
+
+STRUCTURE:
+- HOOK: Show the finished result first. "Here's what we're building today."
+  Show a quick demo of the working system.
+  [PAUSE]
+- PREREQUISITES: What you need before starting (keep brief — 30 sec max)
+  Python version, API keys, tools needed.
+  [PAUSE]
+- STEP-BY-STEP: Walk through the build. Show real code, real terminal, real errors.
+  Break into 3-5 clear steps. Each step should produce a visible result.
+  [PAUSE] between each step.
+- GOTCHAS: Things that tripped you up (save others the pain)
+  Common errors, missing dependencies, version mismatches.
+  [PAUSE]
+- FINAL RESULT: Demo the working system end-to-end
+  Show real output, real data, real performance.
+  [PAUSE]
+- EXTEND IT: Quick ideas for how viewer can customize
+  "Want to add X? Here's how..." (30 sec max)
+  [PAUSE]
+- CTA: "Code is on GitHub. Link in description. Subscribe for the next build."
+
+SHORTS EXTRACTION:
+- Extract the FINAL RESULT demo as a standalone 30-sec "I built this with AI" Short
+- Extract the best GOTCHA as a "Don't make this mistake" Short
+- Extract one cool STEP as a "Build this in 60 seconds" timelapse Short
+
+INSTAGRAM CAPTION TEMPLATE:
+"Built [project] with AI in [time] [emoji]
+[1-2 sentence description of what was built]
+Step-by-step tutorial on YouTube (link in bio)
+Code: github.com/saijayanth888/shark-trading-agent
+#BuildWithAI #CodingTutorial #AIProject #LearnToCode #Python #ClaudeCode #Automation #SharkWaveAI"

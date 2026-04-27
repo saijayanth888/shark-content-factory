@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "content-gen": {
+      "command": "python",
+      "args": ["mcp_servers/content_gen.py"],
+      "transport": "stdio"
+    },
+    "youtube-api": {
+      "command": "python",
+      "args": ["mcp_servers/youtube_api.py"],
+      "transport": "stdio"
+    }
+  }
+}

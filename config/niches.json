@@ -1,0 +1,46 @@
+{
+  "primary_niches": [
+    {
+      "name": "AI Trading",
+      "keywords": [
+        "AI trading bot", "AI trading agent", "algorithmic trading AI",
+        "Claude trading", "Alpaca trading bot", "automated trading",
+        "AI stock trading", "machine learning trading"
+      ],
+      "competitors": [
+        "https://www.youtube.com/@hackingthemarkets",
+        "https://www.youtube.com/@NicholasRenotte"
+      ],
+      "series": "build_log"
+    },
+    {
+      "name": "AI Tools",
+      "keywords": [
+        "Claude Code", "Devin AI", "AI coding tools", "MCP servers",
+        "AI automation", "Cursor AI", "Codex", "AI code review",
+        "Claude Code vs Cursor", "best AI coding assistant"
+      ],
+      "competitors": [],
+      "series": "tool_review"
+    },
+    {
+      "name": "AI Automation",
+      "keywords": [
+        "AI passive income", "AI automation money", "automate with AI",
+        "AI agent build", "build AI agent", "AI side hustle",
+        "Claude Code tutorial", "AI workflow automation"
+      ],
+      "competitors": [],
+      "series": "tutorial"
+    }
+  ],
+  "shorts_topics": [
+    "AI trading results reveal",
+    "One AI tool you need to know",
+    "AI trading bot mistake that cost me $X",
+    "Build this AI agent in 60 seconds",
+    "Claude Code tip most people don't know",
+    "AI vs human trader results",
+    "This AI tool replaced my workflow"
+  ]
+}
