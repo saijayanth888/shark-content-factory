@@ -138,7 +138,29 @@ create thumbnails, and publish to YouTube (long-form + Shorts) and Instagram Ree
 | 7-12  | 1.5K-5K | 20K-50K | $200-800 | $7/mo | +$193-793 |
 | 13-24 | 5K-20K | 50K-200K | $800-3,000 | $7/mo | +$793-2,993 |
 
+## Multi-Agent Architecture
+
+6 specialized agents coordinate via Google Sheets as a shared state machine:
+
+1. **Research Agent** — Weekly content planning (market-research, sheets-api)
+2. **Production Agent** — Video/short creation (content-gen, sheets-api)
+3. **Legal & Quality Agent** — Compliance gate (legal-compliance, sheets-api)
+4. **Publishing Agent** — YouTube/Instagram uploads (youtube-api, sheets-api)
+5. **Analytics Agent** — Performance capture (youtube-api, sheets-api)
+6. **Market Research Agent** — Bi-weekly deep intelligence (market-research, sheets-api)
+
+Content flows: PLANNED → PRODUCED → APPROVED/REJECTED → PUBLISHED → ANALYZED
+
+## MCP Servers
+
+- `content-gen` — Script, voiceover, video, thumbnail, SEO, A/B testing
+- `youtube-api` — Upload, analytics, playlists, comments, community posts
+- `sheets-api` — Calendar, costs, audit log, asset provenance, performance metrics
+- `legal-compliance` — Policy checks, copyright, AI disclosure, compliance reports
+- `market-research` — Trends, competitors, content gaps, analytics feedback
+
 ## Environment Variables
+
 - ANTHROPIC_API_KEY
 - ELEVENLABS_API_KEY
 - PEXELS_API_KEY
@@ -147,3 +169,5 @@ create thumbnails, and publish to YouTube (long-form + Shorts) and Instagram Ree
 - INSTAGRAM_ACCESS_TOKEN (Graph API)
 - INSTAGRAM_BUSINESS_ACCOUNT_ID
 - GOOGLE_SHEETS_SPREADSHEET_ID
+- MONTHLY_BUDGET_CAP_USD (default: 10.00)
+- ENVIRONMENT (development | production)

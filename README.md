@@ -77,81 +77,63 @@ flowchart TB
     style REJECT fill:#e53e3e,stroke:#e53e3e,color:#fff
 ```
 
-### MCP Server Architecture
+### Multi-Agent Architecture
 
 ```mermaid
-graph LR
-    subgraph CLAUDE["Claude Code (Cloud Routine)"]
-        CR["Routine Prompt<br/>.md file"]
+graph TB
+    subgraph AGENTS["6 Specialized Agents"]
+        A1["Research Agent<br/>Sunday 10PM ET"]
+        A2["Production Agent<br/>Mon/Wed/Fri + Tue/Thu/Sat"]
+        A3["Legal & Quality Agent<br/>After production"]
+        A4["Publishing Agent<br/>Sunday 8PM ET"]
+        A5["Analytics Agent<br/>Monday 8AM ET"]
+        A6["Market Research Agent<br/>1st & 15th 9AM ET"]
     end
 
-    subgraph MCP1["content-gen MCP (FastMCP/stdio)"]
-        T1["generate_script"]
-        T2["generate_short_script"]
-        T3["generate_voiceover"]
-        T4["assemble_video"]
-        T5["generate_thumbnail"]
-        T6["generate_metadata"]
-        T7["generate_instagram_caption"]
-        T8["convert_to_reel"]
-        T9["create_video_package"]
-        T10["create_short_package"]
-        T11["trend_research"]
-        T12["budget_check"]
-        T13["analytics_feedback"]
-        T14["generate_ab_variants"]
-        T15["policy_compliance_check"]
+    subgraph STATE["Google Sheets State Machine"]
+        S1["Content Calendar"]
+        S2["Cost Tracker"]
+        S3["Audit Log"]
+        S4["Asset Provenance"]
+        S5["Performance Metrics"]
+        S6["Market Intelligence"]
     end
 
-    subgraph MCP2["youtube-api MCP (FastMCP/stdio)"]
-        U1["upload_video"]
-        U2["set_thumbnail"]
-        U3["get_channel_analytics"]
-        U4["create_playlist"]
-        U5["add_to_playlist"]
-        U6["publish_to_instagram"]
-        U7["pin_comment"]
-        U8["add_end_screen"]
-        U9["post_community_update"]
+    subgraph MCP["5 MCP Servers (FastMCP/stdio)"]
+        M1["content-gen<br/>11 tools"]
+        M2["youtube-api<br/>11 tools"]
+        M3["sheets-api<br/>10 tools"]
+        M4["legal-compliance<br/>5 tools"]
+        M5["market-research<br/>4 tools"]
     end
 
-    subgraph APIS["External APIs"]
-        API1["Claude Sonnet"]
-        API2["ElevenLabs"]
-        API3["Pexels"]
-        API4["YouTube Data API"]
-        API5["Instagram Graph API"]
-    end
+    A1 --> M5 & M3
+    A2 --> M1 & M3
+    A3 --> M4 & M3
+    A4 --> M2 & M3
+    A5 --> M2 & M3
+    A6 --> M5 & M3
 
-    subgraph LOCAL["Local Tools"]
-        L1["FFmpeg"]
-        L2["Pillow"]
-    end
+    M3 --> STATE
 
-    subgraph GOOGLE["Google Workspace MCPs (existing)"]
-        G1["Gmail MCP"]
-        G2["Google Sheets MCP"]
-        G3["Google Drive MCP"]
-    end
+    S1 -->|"PLANNED"| A2
+    A2 -->|"PRODUCED"| S1
+    S1 -->|"PRODUCED"| A3
+    A3 -->|"APPROVED/REJECTED"| S1
+    S1 -->|"APPROVED"| A4
+    A4 -->|"PUBLISHED"| S1
 
-    CR --> MCP1
-    CR --> MCP2
-    CR --> GOOGLE
+    style AGENTS fill:#1a1a2e,stroke:#00d4ff,color:#fff
+    style STATE fill:#0d1b2a,stroke:#48bb78,color:#fff
+    style MCP fill:#0d1b2a,stroke:#ed8936,color:#fff
+```
 
-    T1 & T2 & T6 & T7 --> API1
-    T3 --> API2
-    T4 --> API3
-    T4 & T8 --> L1
-    T5 --> L2
-    U1 & U2 & U3 & U4 & U5 & U7 & U8 & U9 --> API4
-    U6 --> API5
+### Content State Machine
 
-    style CLAUDE fill:#1a1a2e,stroke:#00d4ff,color:#fff
-    style MCP1 fill:#0d1b2a,stroke:#48bb78,color:#fff
-    style MCP2 fill:#0d1b2a,stroke:#fc8181,color:#fff
-    style APIS fill:#1a1a2e,stroke:#ed8936,color:#fff
-    style LOCAL fill:#1a1a2e,stroke:#9f7aea,color:#fff
-    style GOOGLE fill:#1a1a2e,stroke:#63b3ed,color:#fff
+```
+📋 PLANNED → 🔨 PRODUCED → ✅ APPROVED → 🚀 PUBLISHED → 📊 ANALYZED
+                           → ❌ REJECTED (fix & retry)
+                           → ⚖️ IN REVIEW (human decision needed)
 ```
 
 ### Revenue Flywheel
@@ -634,57 +616,63 @@ Projected totals:
 
 ```
 shark-content-factory/
-├── CLAUDE.md                     # AI persona, content strategy, revenue model
-├── README.md                     # This file — design, infra, checklist
-├── requirements.txt              # Python dependencies
-├── .env.template                 # Environment variable template
+├── CLAUDE.md                        # AI persona, content strategy, multi-agent architecture
+├── README.md                        # This file — design, infra, checklist
+├── requirements.txt                 # Python dependencies
+├── .env.template                    # Environment variable template
 ├── .gitignore
-├── oauth_setup.py                # One-time Google OAuth setup
-├── pytest.ini                    # Test config (skips integration by default)
-│
-├── .claude/
-│   └── mcp.json                  # MCP server config (used by Cloud Routines)
-│
-├── mcp_servers/                  # Custom FastMCP servers
-│   ├── __init__.py
-│   ├── content_gen.py            # 15 tools: script/voice/video/thumb/meta/shorts/reels/budget/trends/ab/policy
-│   └── youtube_api.py            # 9 tools: upload/thumbnail/analytics/playlists/instagram/comment/endscreen/community
-│
-├── routines/                     # Cloud Routine prompts (cron-triggered)
-│   ├── daily_content.md          # Mon/Wed/Fri — long-form video production
-│   ├── shorts_production.md      # Tue/Thu/Sat — Shorts + Reels production
-│   └── weekly_publish.md         # Sunday — batch upload + analytics + report
+├── oauth_setup.py                   # One-time Google OAuth setup
+├── pytest.ini                       # Test config (skips integration by default)
 │
 ├── config/
-│   ├── voices.json               # ElevenLabs voice settings
-│   ├── niches.json               # Topic keywords + competitors
-│   ├── schedule.json             # Publish schedule + cron expressions
-│   └── platforms.json            # Platform specs (YT/Shorts/IG resolution, codecs)
+│   ├── mcp.json                     # MCP server config (5 servers)
+│   ├── urls.json                    # Centralized URL config (no hardcoded URLs)
+│   ├── voices.json                  # ElevenLabs voice settings
+│   ├── niches.json                  # Topic keywords + competitors
+│   ├── schedule.json                # Publish schedule + cron expressions
+│   └── platforms.json               # Platform specs (YT/Shorts/IG resolution, codecs)
+│
+├── mcp_servers/                     # Custom FastMCP servers
+│   ├── __init__.py
+│   ├── content_gen.py               # 11 tools: script/voice/video/thumb/meta/shorts/reels/ab
+│   ├── youtube_api.py               # 11 tools: upload/thumbnail/analytics/playlists/instagram
+│   ├── sheets_api.py                # 10 tools: calendar/costs/audit/provenance/performance
+│   ├── legal_compliance.py          # 5 tools: policy/copyright/disclosure/report
+│   └── market_research.py           # 4 tools: trends/competitors/gaps/feedback
+│
+├── routines/                        # Cloud Routine prompts (cron-triggered)
+│   ├── daily_content.md             # Production Agent — Mon/Wed/Fri long-form
+│   ├── shorts_production.md         # Production Agent — Tue/Thu/Sat Shorts + Reels
+│   ├── weekly_publish.md            # Publishing Agent — Sunday batch upload
+│   ├── research_agent.md            # Research Agent — Sunday weekly planning
+│   ├── legal_quality_agent.md       # Legal & Quality Agent — review PRODUCED items
+│   ├── analytics_agent.md           # Analytics Agent — Monday performance capture
+│   └── market_research_agent.md     # Market Research Agent — bi-weekly intelligence
 │
 ├── templates/
-│   ├── script_trading_update.txt # Build Log script template
-│   ├── script_tool_review.txt    # Tool Teardown script template
-│   ├── script_tutorial.txt       # Build With AI script template
-│   └── script_short.txt          # Shorts/Reels script template
+│   ├── script_trading_update.txt    # Build Log script template
+│   ├── script_tool_review.txt       # Tool Teardown script template
+│   ├── script_tutorial.txt          # Build With AI script template
+│   └── script_short.txt             # Shorts/Reels script template
 │
 ├── content/
-│   ├── queue/                    # Long-form videos ready to publish
-│   ├── published/                # Published manifests (archived)
-│   ├── footage/                  # Pexels clips (cached, gitignored)
-│   ├── shorts/                   # YouTube Shorts queue
-│   └── reels/                    # Instagram Reels queue + captions
+│   ├── queue/                       # Long-form videos ready to publish
+│   ├── published/                   # Published manifests (archived)
+│   ├── footage/                     # Pexels clips (cached, gitignored)
+│   ├── shorts/                      # YouTube Shorts queue
+│   └── reels/                       # Instagram Reels queue + captions
 │
 └── tests/
     ├── __init__.py
-    ├── test_content_gen.py       # Unit + integration tests for content pipeline
-    └── test_youtube_api.py       # Unit + integration tests for publishing
+    ├── test_content_gen.py          # Unit + integration tests for content pipeline
+    └── test_youtube_api.py          # Unit + integration tests for publishing
 ```
 
 ---
 
 ## MCP Tools Reference
 
-### content-gen MCP Server (15 tools)
+### content-gen (11 tools)
 
 | Tool | Description | External API |
 |------|-------------|-------------|
@@ -692,31 +680,87 @@ shark-content-factory/
 | `generate_short_script` | 30-60 sec Shorts/Reels script | Claude Sonnet |
 | `generate_voiceover` | Text-to-speech audio | ElevenLabs |
 | `assemble_video` | Video assembly (16:9 or 9:16) | Pexels + FFmpeg |
-| `generate_thumbnail` | 1280x720 branded thumbnail (Linux-safe fonts) | Pillow (local) |
+| `generate_thumbnail` | 1280x720 branded thumbnail | Pillow (local) |
 | `generate_metadata` | SEO title, description, tags | Claude Sonnet |
 | `generate_instagram_caption` | Caption + 30 hashtags | Claude Sonnet |
 | `convert_to_reel` | Re-encode Short for Instagram | FFmpeg (local) |
 | `create_video_package` | **Full pipeline** (long-form) | All above |
 | `create_short_package` | **Full pipeline** (Short + Reel) | All above |
-| `budget_check` | **Budget guard** — enforce $10/mo cap | Local (manifest scan) |
-| `trend_research` | **Trend research** — YouTube autocomplete + niche scoring | YouTube Suggest API |
-| `analytics_feedback` | **Analytics loop** — learn from past performance | Local (manifest analysis) |
 | `generate_ab_variants` | **A/B testing** — 3 title + 2 thumbnail variants | Claude Sonnet + Pillow |
-| `policy_compliance_check` | **Policy gate** — YouTube 2025 rules validation | Local (script analysis) |
 
-### youtube-api MCP Server (9 tools)
+### youtube-api (11 tools)
 
 | Tool | Description | External API |
 |------|-------------|-------------|
 | `upload_video` | Upload long-form or Shorts | YouTube Data API v3 |
 | `set_thumbnail` | Custom thumbnail upload | YouTube Data API v3 |
 | `get_channel_analytics` | Subs, views, recent video stats | YouTube Data API v3 |
+| `get_deep_analytics` | CTR, retention, revenue, traffic sources | YouTube Analytics API |
+| `check_subscriber_milestones` | Track milestone progress (100/500/1K/etc) | YouTube Data API v3 |
 | `create_playlist` | Create series playlist | YouTube Data API v3 |
 | `add_to_playlist` | Add video to playlist | YouTube Data API v3 |
-| `pin_comment` | **Post channel comment** (affiliate links + CTA) | YouTube Data API v3 |
-| `add_end_screen` | **End screen config** (subscribe + next video) | YouTube Studio (instructions) |
-| `post_community_update` | **Community post** (polls, announcements) | YouTube Studio (instructions) |
+| `pin_comment` | Post channel comment (affiliate links + CTA) | YouTube Data API v3 |
+| `add_end_screen` | End screen config (subscribe + next video) | YouTube Studio |
+| `post_community_update` | Community post (polls, announcements) | YouTube Studio |
 | `publish_to_instagram` | Publish Reel to Instagram | Instagram Graph API |
+
+### sheets-api (10 tools)
+
+| Tool | Description | External API |
+|------|-------------|-------------|
+| `read_calendar` | Read Content Calendar with optional filters | Google Sheets API |
+| `write_calendar` | Write new planned items to Calendar | Google Sheets API |
+| `update_content_status` | Transition content through state machine | Google Sheets API |
+| `budget_check` | Enforce $10/mo cap from Cost Tracker | Google Sheets API |
+| `log_cost` | Record per-video production costs | Google Sheets API |
+| `log_audit_event` | Immutable audit log entry | Google Sheets API |
+| `log_asset_provenance` | Track origin of every asset | Google Sheets API |
+| `write_performance_metrics` | Store video performance data | Google Sheets API |
+| `write_market_intelligence` | Store competitor/trend research | Google Sheets API |
+| `get_dashboard_summary` | Aggregated stats for reporting | Google Sheets API |
+
+### legal-compliance (5 tools)
+
+| Tool | Description | External API |
+|------|-------------|-------------|
+| `policy_compliance_check` | YouTube 2025 rules validation | Local (script analysis) |
+| `copyright_scan` | Check for copyrighted content | Local (pattern matching) |
+| `ai_disclosure_check` | Verify AI disclosure requirements | Local |
+| `generate_compliance_report` | Full compliance report for a video | Local |
+| `get_policy_reference` | Latest YouTube/Instagram policy rules | Local (config) |
+
+### market-research (4 tools)
+
+| Tool | Description | External API |
+|------|-------------|-------------|
+| `trend_research` | YouTube autocomplete + niche scoring | YouTube Suggest API |
+| `competitor_analysis` | Public metrics from rival channels | YouTube Data API v3 |
+| `content_gap_analysis` | Find untapped topics in niche | YouTube Suggest API |
+| `analytics_feedback` | Learn from past performance | Local (manifest analysis) |
+
+---
+
+## Action Items
+
+### Prerequisites (one-time setup)
+
+1. Run `oauth_setup.py` to get Google OAuth tokens
+2. Create a Google Sheet with tabs: `Content Calendar`, `Cost Tracker`, `Audit Log`, `Asset Provenance`, `Performance Metrics`, `Market Intelligence`
+3. Copy `.env.template` → `.env` and fill in all keys
+4. Install FFmpeg: `brew install ffmpeg`
+5. Install Python deps: `pip install -r requirements.txt`
+
+### Configure Cloud Routines
+
+| Routine | Cron | Agent |
+|---------|------|-------|
+| `routines/research_agent.md` | `0 22 * * 0` (Sun 10PM ET) | Research Agent |
+| `routines/daily_content.md` | `0 5 * * 1,3,5` (MWF 5AM ET) | Production Agent |
+| `routines/shorts_production.md` | `0 6 * * 2,4,6` (TTS 6AM ET) | Production Agent |
+| `routines/legal_quality_agent.md` | `0 7 * * 1-6` (Daily 7AM ET) | Legal & Quality Agent |
+| `routines/weekly_publish.md` | `0 20 * * 0` (Sun 8PM ET) | Publishing Agent |
+| `routines/analytics_agent.md` | `0 8 * * 1` (Mon 8AM ET) | Analytics Agent |
+| `routines/market_research_agent.md` | `0 9 1,15 * *` (1st & 15th) | Market Research Agent |
 
 ---
 

@@ -1,16 +1,23 @@
 # Weekly Batch Publish Routine
-# Cloud Routine — runs Sunday at 8 PM ET
-# Cron: 0 20 * * 0
 
-You are the Shark Content Factory. Today is Sunday {date}. Publish the week's content.
+> **Cloud Routine — runs Sunday at 8 PM ET**
+> **Cron:** `0 20 * * 0`
+> **Agent Role:** Publishing Agent
+> **MCP Servers:** `youtube-api`, `sheets-api`
+
+You are the Shark Content Factory Publishing Agent. Today is Sunday {date}. Publish approved content.
 
 ## Steps
 
-1. **Scan the content queue** at `content/queue/` for all `manifest_*.json` files.
+1. **Read APPROVED content from Calendar** (use `sheets-api`):
 
-2. **For each manifest** (long-form videos):
-   a. Load the manifest JSON
-   b. Upload the video using the youtube-api MCP:
+   Call `read_calendar(status_filter="✅ APPROVED")`.
+   Only publish items that have passed the Legal & Quality Agent review.
+
+2. **For each APPROVED long-form video**:
+
+   a. Load the manifest from the script/video paths in the Calendar row.
+   b. Upload the video (use `youtube-api`):
       ```
       upload_video(
           video_path=manifest.video_path,
@@ -26,41 +33,30 @@ You are the Shark Content Factory. Today is Sunday {date}. Publish the week's co
       ```
       set_thumbnail(video_id="{id}", thumbnail_path=manifest.thumbnail_path)
       ```
-   d. **Pin a revenue-optimized comment** (affiliate links + resources):
+   d. Pin a revenue-optimized comment:
       ```
       pin_comment(video_id="{id}", comment_text="📌 Resources mentioned:\n- [Tool Name]: affiliate_link\n- GitHub: repo_link\n\n🦈 Full playlist: playlist_link")
       ```
-   e. **Configure end screen** for subscriber growth:
+   e. Configure end screen:
       ```
       add_end_screen(video_id="{id}", subscribe_element=True, best_for_viewer=True)
       ```
-   f. Add to the appropriate playlist (create if needed):
-      - "Shark Agent Build Log" playlist for build_log series
-      - "Build With AI" playlist for tutorial series
-      - "Tool Teardowns" playlist for tool_review series
-
-3. **Scan the shorts queue** at `content/shorts/` for all `short_manifest_*.json` files.
-
-4. **For each short manifest**:
-   a. Upload to YouTube as a Short:
+   f. Add to the appropriate playlist.
+   g. **Update Calendar status to PUBLISHED** (use `sheets-api`):
       ```
-      upload_video(
-          video_path=manifest.youtube_short.video_path,
-          title=short_title,
-          is_short=True,
-          privacy="private",
-          publish_at="{scheduled_datetime}"
-      )
-      ```
-   b. Queue the Instagram Reel for manual upload (or auto-publish if API is configured):
-      ```
-      publish_to_instagram(
-          video_path=manifest.instagram_reel.reel_path,
-          caption=caption_data.caption + "\n\n" + " ".join(caption_data.hashtags)
+      update_content_status(
+          topic="{topic}", date="{date}", new_status="🚀 PUBLISHED",
+          agent="publishing_agent", notes="video_id: {id}"
       )
       ```
 
-5. **Schedule timing** from `config/schedule.json`:
+3. **For each APPROVED short** (from shorts queue):
+
+   a. Upload to YouTube as a Short (use `youtube-api`).
+   b. Queue the Instagram Reel (use `youtube-api`).
+   c. Update Calendar status to `🚀 PUBLISHED`.
+
+4. **Schedule timing** from `config/schedule.json`:
    - Monday 10 AM ET: Tool Teardown (long-form)
    - Tuesday 12 PM ET: Short + Reel
    - Wednesday 10 AM ET: Build With AI (long-form)
@@ -68,9 +64,9 @@ You are the Shark Content Factory. Today is Sunday {date}. Publish the week's co
    - Friday 10 AM ET: Build Log (long-form)
    - Saturday 12 PM ET: Short + Reel
 
-6. **Move published manifests** to `content/published/` (create dir if needed).
+5. **Move published manifests** to `content/published/`.
 
-7. **Post a community update** to keep subscribers engaged:
+6. **Post a community update** (use `youtube-api`):
 
    ```
    post_community_update(
@@ -79,27 +75,19 @@ You are the Shark Content Factory. Today is Sunday {date}. Publish the week's co
    )
    ```
 
-8. **Get channel analytics** and run feedback loop:
+7. **Budget check** (use `sheets-api`):
+
+   Call `budget_check()` for month-end awareness.
+
+8. **Audit trail** (use `sheets-api`):
 
    ```
-   get_channel_analytics(days=7)
-   analytics_feedback()
+   log_audit_event(agent="publishing_agent", action="WEEKLY_PUBLISH",
+                   details="Published N long-form, M shorts. Budget remaining: $X")
    ```
 
-   - Compare this week's performance to last week
-   - Identify top/bottom performing content
-   - Adjust next week's topic selection based on analytics
+9. **Send weekly report** via Gmail:
+   - Subject: "Shark Factory Weekly Report — Week of {date}"
+   - Body: videos published, costs, channel stats, budget remaining
 
-9. **Budget check** for month-end awareness:
-
-   ```
-   budget_check()
-   ```
-
-10. **Send weekly report** via Gmail:
-    - Subject: "Shark Factory Weekly Report — Week of {date}"
-    - Body: videos published, costs this week, total monthly cost,
-      channel stats (subs, views), top performing video,
-      analytics feedback recommendations, budget remaining
-
-11. **Log to Google Sheets**: weekly summary row with publish count, costs, analytics.
+**Note:** Deep analytics are captured by the Analytics Agent on Monday mornings.

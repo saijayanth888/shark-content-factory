@@ -1,0 +1,50 @@
+{
+  "mcpServers": {
+    "content-gen": {
+      "command": "python",
+      "args": ["mcp_servers/content_gen.py"],
+      "env": {
+        "ANTHROPIC_API_KEY": "${ANTHROPIC_API_KEY}",
+        "ELEVENLABS_API_KEY": "${ELEVENLABS_API_KEY}",
+        "PEXELS_API_KEY": "${PEXELS_API_KEY}",
+        "MONTHLY_BUDGET_CAP_USD": "${MONTHLY_BUDGET_CAP_USD}",
+        "ENVIRONMENT": "${ENVIRONMENT}"
+      }
+    },
+    "youtube-api": {
+      "command": "python",
+      "args": ["mcp_servers/youtube_api.py"],
+      "env": {
+        "YOUTUBE_CLIENT_SECRETS_PATH": "${YOUTUBE_CLIENT_SECRETS_PATH}",
+        "YOUTUBE_TOKEN_PATH": "${YOUTUBE_TOKEN_PATH}",
+        "INSTAGRAM_ACCESS_TOKEN": "${INSTAGRAM_ACCESS_TOKEN}",
+        "INSTAGRAM_BUSINESS_ACCOUNT_ID": "${INSTAGRAM_BUSINESS_ACCOUNT_ID}",
+        "ENVIRONMENT": "${ENVIRONMENT}"
+      }
+    },
+    "sheets-api": {
+      "command": "python",
+      "args": ["mcp_servers/sheets_api.py"],
+      "env": {
+        "GOOGLE_SHEETS_SPREADSHEET_ID": "${GOOGLE_SHEETS_SPREADSHEET_ID}",
+        "YOUTUBE_TOKEN_PATH": "${YOUTUBE_TOKEN_PATH}",
+        "MONTHLY_BUDGET_CAP_USD": "${MONTHLY_BUDGET_CAP_USD}",
+        "ENVIRONMENT": "${ENVIRONMENT}"
+      }
+    },
+    "legal-compliance": {
+      "command": "python",
+      "args": ["mcp_servers/legal_compliance.py"],
+      "env": {
+        "ENVIRONMENT": "${ENVIRONMENT}"
+      }
+    },
+    "market-research": {
+      "command": "python",
+      "args": ["mcp_servers/market_research.py"],
+      "env": {
+        "ENVIRONMENT": "${ENVIRONMENT}"
+      }
+    }
+  }
+}

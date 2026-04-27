@@ -593,5 +593,279 @@ def publish_to_instagram(
     })
 
 
+@mcp.tool()
+def get_deep_analytics(video_id: str, days: int = 28) -> str:
+    """Pull comprehensive analytics for a specific video.
+
+    Uses YouTube Analytics API for detailed metrics including CTR,
+    retention, revenue, traffic sources, and audience demographics.
+
+    Requires yt-analytics.readonly and yt-analytics-monetary.readonly
+    OAuth scopes. Run oauth_setup.py to re-authorize if missing.
+
+    Args:
+        video_id: YouTube video ID
+        days: Number of days to look back (default 28)
+
+    Returns:
+        JSON with views, impressions, CTR, avg_view_duration,
+        avg_view_percentage, likes, comments, shares, subs_gained,
+        subs_lost, est_revenue, cpm, traffic_sources
+    """
+    try:
+        youtube, creds = _build_youtube_service(return_creds=True)
+        analytics = build("youtubeAnalytics", "v2", credentials=creds)
+
+        end_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        start_date = (
+            datetime.now(timezone.utc) - __import__("datetime").timedelta(days=days)
+        ).strftime("%Y-%m-%d")
+
+        # Core metrics query
+        core = analytics.reports().query(
+            ids="channel==MINE",
+            startDate=start_date,
+            endDate=end_date,
+            metrics=(
+                "views,estimatedMinutesWatched,averageViewDuration,"
+                "averageViewPercentage,likes,comments,shares,"
+                "subscribersGained,subscribersLost,"
+                "estimatedRevenue,cpm,"
+                "cardClickRate,cardImpressions"
+            ),
+            filters=f"video=={video_id}",
+        ).execute()
+
+        core_row = core.get("rows", [[]])[0] if core.get("rows") else []
+        core_headers = [
+            h["name"] for h in core.get("columnHeaders", [])
+        ]
+        core_data = dict(zip(core_headers, core_row)) if core_row else {}
+
+        # Reach metrics (impressions, CTR)
+        reach = analytics.reports().query(
+            ids="channel==MINE",
+            startDate=start_date,
+            endDate=end_date,
+            metrics="views,impressions,impressionClickThroughRate",
+            filters=f"video=={video_id}",
+        ).execute()
+
+        reach_row = reach.get("rows", [[]])[0] if reach.get("rows") else []
+        reach_headers = [h["name"] for h in reach.get("columnHeaders", [])]
+        reach_data = dict(zip(reach_headers, reach_row)) if reach_row else {}
+
+        # Traffic sources
+        traffic = analytics.reports().query(
+            ids="channel==MINE",
+            startDate=start_date,
+            endDate=end_date,
+            metrics="views",
+            dimensions="insightTrafficSourceType",
+            filters=f"video=={video_id}",
+            sort="-views",
+        ).execute()
+
+        traffic_sources = {}
+        for row in traffic.get("rows", []):
+            if len(row) >= 2:
+                traffic_sources[row[0]] = row[1]
+
+        # Format duration
+        avg_dur_sec = core_data.get("averageViewDuration", 0)
+        avg_dur_str = f"{int(avg_dur_sec) // 60}:{int(avg_dur_sec) % 60:02d}"
+
+        return json.dumps({
+            "video_id": video_id,
+            "period": f"{start_date} to {end_date}",
+            "views": core_data.get("views", 0),
+            "impressions": reach_data.get("impressions", 0),
+            "ctr_percent": round(
+                reach_data.get("impressionClickThroughRate", 0) * 100, 2
+            ),
+            "estimated_minutes_watched": core_data.get(
+                "estimatedMinutesWatched", 0
+            ),
+            "avg_view_duration": avg_dur_str,
+            "avg_view_duration_sec": avg_dur_sec,
+            "avg_view_percent": round(
+                core_data.get("averageViewPercentage", 0), 1
+            ),
+            "likes": core_data.get("likes", 0),
+            "comments": core_data.get("comments", 0),
+            "shares": core_data.get("shares", 0),
+            "subs_gained": core_data.get("subscribersGained", 0),
+            "subs_lost": core_data.get("subscribersLost", 0),
+            "est_revenue_usd": round(
+                core_data.get("estimatedRevenue", 0), 4
+            ),
+            "cpm": round(core_data.get("cpm", 0), 2),
+            "card_click_rate": round(
+                core_data.get("cardClickRate", 0) * 100, 2
+            ),
+            "card_impressions": core_data.get("cardImpressions", 0),
+            "traffic_sources": traffic_sources,
+        })
+
+    except Exception as e:
+        return json.dumps({
+            "error": mask_error_details(e),
+            "tool": "get_deep_analytics",
+            "hint": (
+                "If scope error, re-run: python oauth_setup.py "
+                "(needs yt-analytics.readonly scope)"
+            ),
+        })
+
+
+@mcp.tool()
+def get_subscriber_milestones() -> str:
+    """Track subscriber count and YPP milestone progress.
+
+    Returns current subscriber count, total watch hours,
+    and progress toward YouTube Partner Program thresholds.
+
+    Milestones tracked:
+    - 100 subs: Community tab
+    - 500 subs: Community posts with images
+    - 1,000 subs: YPP eligibility (+ 4,000 watch hours)
+    - 10,000 subs: Super Chat, memberships
+    - 100,000 subs: Silver Play Button
+
+    Returns:
+        JSON with current_subscribers, watch_hours, milestones, next_milestone
+    """
+    try:
+        youtube, creds = _build_youtube_service(return_creds=True)
+
+        # Channel stats
+        ch = youtube.channels().list(
+            part="statistics",
+            mine=True,
+        ).execute()
+
+        if not ch.get("items"):
+            return json.dumps({"error": "Channel not found"})
+
+        stats = ch["items"][0]["statistics"]
+        subs = int(stats.get("subscriberCount", 0))
+        total_views = int(stats.get("viewCount", 0))
+        video_count = int(stats.get("videoCount", 0))
+
+        # Watch hours (last 365 days) via Analytics API
+        watch_hours = 0.0
+        try:
+            analytics = build("youtubeAnalytics", "v2", credentials=creds)
+            end_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+            start_date = (
+                datetime.now(timezone.utc)
+                - __import__("datetime").timedelta(days=365)
+            ).strftime("%Y-%m-%d")
+
+            wh = analytics.reports().query(
+                ids="channel==MINE",
+                startDate=start_date,
+                endDate=end_date,
+                metrics="estimatedMinutesWatched",
+            ).execute()
+
+            if wh.get("rows"):
+                watch_hours = round(wh["rows"][0][0] / 60, 1)
+        except Exception:
+            pass
+
+        milestones = [
+            {
+                "name": "Community Tab",
+                "threshold": 100,
+                "reached": subs >= 100,
+                "progress_pct": min(round(subs / 100 * 100, 1), 100),
+                "benefit": "Enables community posts (text only)",
+            },
+            {
+                "name": "Community Images",
+                "threshold": 500,
+                "reached": subs >= 500,
+                "progress_pct": min(round(subs / 500 * 100, 1), 100),
+                "benefit": "Community posts with images and polls",
+            },
+            {
+                "name": "YPP Subscribers",
+                "threshold": 1000,
+                "reached": subs >= 1000,
+                "progress_pct": min(round(subs / 1000 * 100, 1), 100),
+                "benefit": "YouTube Partner Program eligibility (subscriber req)",
+            },
+            {
+                "name": "YPP Watch Hours",
+                "threshold": 4000,
+                "unit": "hours",
+                "reached": watch_hours >= 4000,
+                "current": watch_hours,
+                "progress_pct": min(round(watch_hours / 4000 * 100, 1), 100),
+                "benefit": "YouTube Partner Program eligibility (watch hours req)",
+            },
+            {
+                "name": "Super Chat & Memberships",
+                "threshold": 10000,
+                "reached": subs >= 10000,
+                "progress_pct": min(round(subs / 10000 * 100, 1), 100),
+                "benefit": "Enables Super Chat, channel memberships, merch shelf",
+            },
+            {
+                "name": "Silver Play Button",
+                "threshold": 100000,
+                "reached": subs >= 100000,
+                "progress_pct": min(round(subs / 100000 * 100, 1), 100),
+                "benefit": "YouTube Silver Play Button award",
+            },
+        ]
+
+        # Find next milestone
+        next_milestone = None
+        for m in milestones:
+            if not m["reached"]:
+                next_milestone = m["name"]
+                break
+
+        ypp_eligible = subs >= 1000 and watch_hours >= 4000
+
+        return json.dumps({
+            "current_subscribers": subs,
+            "total_views": total_views,
+            "total_videos": video_count,
+            "watch_hours_365d": watch_hours,
+            "ypp_eligible": ypp_eligible,
+            "milestones": milestones,
+            "next_milestone": next_milestone,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+        })
+
+    except Exception as e:
+        return json.dumps({
+            "error": mask_error_details(e),
+            "tool": "get_subscriber_milestones",
+        })
+
+
+def _build_youtube_service(return_creds=False):
+    """Build YouTube service, optionally returning creds for Analytics API."""
+    token_path = os.path.expanduser(
+        os.getenv("YOUTUBE_TOKEN_PATH", "~/.shark-content-factory/youtube_token.json")
+    )
+    if not os.path.exists(token_path):
+        raise FileNotFoundError(
+            f"OAuth token not found at {token_path}. Run: python oauth_setup.py"
+        )
+    creds = Credentials.from_authorized_user_file(token_path)
+    if creds.expired and creds.refresh_token:
+        creds.refresh(Request())
+        Path(token_path).write_text(creds.to_json())
+    yt = build("youtube", "v3", credentials=creds)
+    if return_creds:
+        return yt, creds
+    return yt
+
+
 if __name__ == "__main__":
     mcp.run(transport="stdio")
